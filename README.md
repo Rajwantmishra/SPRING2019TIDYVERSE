@@ -1,3 +1,14 @@
+Part 1 : http://rpubs.com/Rajwantmishra/tidy
+
+Part 2:  http://rpubs.com/Rajwantmishra/tidy2
+
+Github Link :  https://github.com/Rajwantmishra/SPRING2019TIDYVERSE
+
+For Part 2 request submitted  with pull request :  https://github.com/acatlin/SPRING2019TIDYVERSE/pull/5
+
+
+
+
 ``` r
 All<- tidyverse::tidyverse_packages()
 
