@@ -2,13 +2,13 @@
 title: "TidyVerse"
 author: "Rajwant Mishra"
 date: "April 14, 2019"
-output:
-  html_document:
+ html_document:
     df_print: paged
     toc: true
     toc_float: true
     highlight: tango
     toc_depth: 2
+
 ---
 
 ```{r setup, include=FALSE}
@@ -19,6 +19,17 @@ library(tidyverse)
 library(stringr)
 library(lubridate)
 library(cli)
+
+ # html_document:
+ #    df_print: paged
+ #    toc: true
+ #    toc_float: true
+ #    highlight: tango
+ #    toc_depth: 2
+
+# output:
+#   md_document:
+#     variant: markdown_github
 
 ```
  
@@ -297,7 +308,7 @@ g_base + geom_col() + facet_wrap(~month(D_trump$newDate))
   
   
   
-  DT::datatable(newTestDate)
+  print(newTestDate)
   
   # I want to list all Tweets by Month and day
   # We can user group_by to group our data. 
