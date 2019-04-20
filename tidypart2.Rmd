@@ -1,0 +1,139 @@
+---
+title: "TidyVerse Assignment - Trump Approval Ratings"
+author: "Isabel Ramesar"
+date: "April 16, 2019"
+output: 
+  html_document:
+    theme: paper
+    highlight: zenburn
+    toc: true
+    toc_float: true
+---
+
+I will focus on how to use the `Nest` and `Unnest` functions utilizing data from *FiveThirtyEight*,"How Popular Is Donald Trump?" from the trump-approval-ratings data set. <br/> 
+(Source: https://data.fivethirtyeight.com/)
+
+***
+
+#Nest & Tibble {.tabset .tabset-fade}
+
+`Nest` creates a list of data frames containing all the nested variables. <br/> 
+(Source: https://tidyr.tidyverse.org/reference/nest.html)
+
+`Tibble`, or tbl_df, is a modern reimagining of the data.frame, keeping what time has proven to be effective, and throwing out what is not. Tibbles are data.frames that are lazy and surly: they do less (i.e. they don't change variable names or types, and don't do partial matching) and complain more (e.g. when a variable does not exist). This forces you to confront problems earlier, typically leading to cleaner, more expressive code. <br/> 
+(Source: https://tibble.tidyverse.org/)
+
+***
+
+## Nest Arguments
+
+data - A data frame.
+
+...  - A selection of columns. If empty, all variables are selected. You can supply bare variable names, select all variables between x and z with x:z, exclude y with -y. For more options, see the dplyr::select() documentation. See also the section on selection rules below.
+
+.key - The name of the new column, as a string or symbol.
+
+This argument is passed by expression and supports quasiquotation (you can unquote strings and symbols). The name is captured from the expression with rlang::ensym() (note that this kind of interface where symbols do not represent actual objects is now discouraged in the tidyverse; we support it here for backward compatibility).
+
+***
+
+##Example
+
+The first step is to load the data into R.
+```{r message=FALSE, comment= FALSE, warning=FALSE}
+library(tidyverse)
+library(DT)
+```
+
+```{r message=FALSE, comment= FALSE, warning=FALSE}
+poll <- read.csv("https://raw.githubusercontent.com/IsARam/Data607TidyVerse/master/approval_polllist%5B1%5D.csv", sep = ",", na.strings = "NA", strip.white = TRUE, stringsAsFactors = FALSE)
+datatable(poll, extensions = 'Buttons', options = list(
+  dom = 'Bfrtip',
+  buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
+```
+
+The next step is to use the `nest` function to create a list of data frames containing all the nested variables by pollster, in the below example. Use the `group_by` and `arrange` functions to achieve result. 
+
+```{r message=FALSE, comment= FALSE, warning=FALSE}
+npoll<-poll %>% group_by(pollster) %>% nest()
+npoll2<- arrange(npoll, (pollster))
+head(npoll2,10)
+```
+
+A `tibble` is displayed in the *data* column for each groupped *pollster*, sorted alphabetically in ascending order. 
+
+***
+
+#Unnest {.tabset .tabset-fade}
+
+`Unnest` is the inverse operation of `nest`. If you have a list-column, this makes each element of the list its own row. unnest() can handle list-columns that contain atomic vectors, lists, or data frames (but not a mixture of the different types). <br/> 
+(Source: https://tidyr.tidyverse.org/reference/unnest.html)
+
+***
+
+##Unnest Arguments
+
+data - A data frame.
+
+...  - Specification of columns to unnest. Use bare variable names or functions of variables. If omitted, defaults to all list-cols.
+
+.drop - Should additional list columns be dropped? By default, unnest will drop them if unnesting the specified columns requires the rows to be duplicated.
+
+.id - Data frame identifier - if supplied, will create a new column with name .id, giving a unique identifier. This is most useful if the list column is named.
+
+.sep	- If non-NULL, the names of unnested data frame columns will combine the name of the original list-col with the names from nested data frame, separated by .sep.
+
+.preserve - Optionally, list-columns to preserve in the output. These will be duplicated in the same way as atomic vectors. This has dplyr::select semantics so you can preserve multiple variables with .preserve = c(x, y) or .preserve = starts_with("list").
+
+##Example
+
+Using the nested table *npoll* from the example in the `Nest` section we can `Unnest` the table. This will display the orginal data table structure. The *pollster* column is now the first column and maintains the ascending alphabetically sort.
+```{r message=FALSE, comment= FALSE, warning=FALSE}
+unpoll<- npoll2 %>% unnest()
+datatable(unpoll, extensions = 'Buttons', options = list(
+  dom = 'Bfrtip',
+  buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+)
+```
+
+
+
+## Rajwant Part2 Start: 
+### Working with forcats package 
+
+This package give some tool tool to work with Categorical Variables
+Count entries in a factor, similar to table or group_by with summareise .
+ Here I am using `fct_count` , `group_by` and `table` to get the count of factor variable.
+
+
+```{r}
+fct_count(poll$grade)
+
+group_by(poll,grade)%>%summarise(count  = n()) 
+
+table(poll$grade)
+
+```
+
+You can use `sort = TRUE` if you want to sort your ouput.
+
+```{r}
+fct_count(poll$grade,sort = TRUE)
+
+```
+
+Lets say you only want to find out only top 3 category of grades, and put rest of them in Other. We can use `fct_lump` to do this, here `n = number of groups ` here I am giving `n = 3` to see how it works.
+
+```{r}
+fact_lump_result <- fct_lump(poll$grade,n=3)
+head(fact_lump_result,n=30)
+class(fact_lump_result)
+# Now we will pass this in fct_count using pipe and sort the reult. 
+(fct_lump(poll$grade,n=3))  %>%fct_count(sort=TRUE)
+
+
+```
+
